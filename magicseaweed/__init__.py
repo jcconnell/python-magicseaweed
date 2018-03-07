@@ -68,10 +68,14 @@ class MSW_Forecast():
 
     def get_timestamp(self):
         """Return UTC timestamp."""
+        if 'timestamp' not in self.forecast:
+            raise ValueError('No timestamp in this forecast.')
         return self.forecast['timestamp']
 
     def get_local_timestamp(self):
         """Return timezone adjusted timestamp for forecast."""
+        if 'localTimestamp' not in self.forecast:
+            raise ValueError('No local timestamp in this forecast.')
         return self.forecast['localTimestamp']
 
     def get_issued_timestamp(self):
@@ -157,7 +161,7 @@ class MagicSeaWeed():
         """Weather icon number. Absolute URL to weather icons."""
         return requests.Request(HTTP_GET, CDN_URL.format(icon_num)).prepare().url
 
-    def get_forecast(self):
+    def get_forecasts(self):
         """Get forecast."""
         resp = requests.get(MSW_URL.format(self.api_key), params=self._get_params())  #, headers=self.headers)
         forecasts = []  # type: List[Dict[str, str]]

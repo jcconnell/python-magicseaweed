@@ -12,7 +12,8 @@ Provides basic API to [Magic Seaweed](https://magicseaweed.com/developer/api).
 ```python
 from magicseaweed import MagicSeaWeed
 
-msw = MagicSeaWeed("your-api-key", spot_id)
+msw = MagicSeaWeed("your-api-key", spot_id, ['timestamp','swell','charts'], 'us')
+print(msw_ponce.get_forecasts())
 ```
 
 Example Response:
