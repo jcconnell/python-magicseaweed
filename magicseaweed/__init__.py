@@ -8,15 +8,23 @@ import datetime
 MSW_URL = 'http://magicseaweed.com/api/{}/forecast'
 HOMEPAGE_URL = 'https://magicseaweed.com/'
 CDN_URL = "http://cdnimages.magicseaweed.com/30x30/{}.png"
+STAR_FILLED_URL = "http://cdnimages.magicseaweed.com/star_filled.png"
+STAR_EMPTY_URL = "http://cdnimages.magicseaweed.com/star_empty.png"
 USER_AGENT = 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
 ATTRIBUTION = 'Information provided by magicseaweed.com'
 HTTP_GET = 'GET'
-FIELD_TYPES = ['timestamp', 'localTimestamp', 'issueTimestamp', 'fadedRating', 'solidRating', 'threeHourTimeText',
-        'swell.minBreakingHeight', 'swell.absMinBreakingHeight', 'swell.maxBreakingHeight', 'swell.absMaxBreakingHeight',
-        'swell.probability', 'swell.unit', 'swell.components[].absHeight', 'swell.components[].period', 'swell.components[].direction',
-        'swell.components[].compassDirection', 'swell.components[].isIncoming', 'wind.speed', 'wind.direction', 'wind.compassDirection',
-        'wind.chill', 'wind.gusts', 'wind.unit', 'condition.temperature', 'condition.weather', 'condition.pressure', 'condition.unitPressure',
-        'condition.unit', 'charts.swell', 'charts.period', 'charts.wind', 'charts.pressure', 'charts.sst']
+ERROR_RESPONSE = 'error_response'
+FIELD_TYPES = ['timestamp', 'localTimestamp', 'issueTimestamp', 'fadedRating',
+               'solidRating', 'threeHourTimeText', 'swell.minBreakingHeight',
+               'swell.absMinBreakingHeight', 'swell.maxBreakingHeight',
+               'swell.absMaxBreakingHeight', 'swell.probability', 'swell.unit',
+               'swell.components[].absHeight', 'swell.components[].period',
+               'swell.components[].direction', 'swell.components[].compassDirection',
+               'swell.components[].isIncoming', 'wind.speed', 'wind.direction',
+               'wind.compassDirection', 'wind.chill', 'wind.gusts', 'wind.unit',
+               'condition.temperature', 'condition.weather', 'condition.pressure',
+               'condition.unitPressure', 'condition.unit', 'charts.swell',
+               'charts.period', 'charts.wind', 'charts.pressure', 'charts.sst']
 
 
 def _validate_incident_date_range(incident, numdays):
@@ -52,50 +60,112 @@ def _validate_field_types(field_types):
             raise ValueError('Invalid field type: {}'.format(field_type))
 
 
-def _incident_in_types(incident, incident_types):
-    """Validate incident type is attribute of incident types"""
-    if incident.get('type') in incident_types:
-        return True
-    return False
+class MSW_Forecast():
+    """Single forecast."""
+
+    def __init__(self, forecast):
+        self.forecast = forecast
+
+    def get_timestamp(self):
+        """Return UTC timestamp."""
+        return self.forecast['timestamp']
+
+    def get_local_timestamp(self):
+        """Return timezone adjusted timestamp for forecast."""
+        return self.forecast['localTimestamp']
+
+    def get_issued_timestamp(self):
+        """Return timestamp when forecast made."""
+        if 'issueTimestamp' not in self.forecast:
+            raise ValueError('No issue timestamp in this forecast.')
+        return self.forecast['issueTimestamp']
+
+    def get_rating(self):
+        """Return array of URLs for star rating."""
+        rating = []
+        if 'rating' not in self.forecast:
+            raise ValueError('No rating in this forecast')
+        for i in range(0,self.forecast['solidRating']):
+            rating.append(STAR_FILLED_URL)
+        for i in range(0,self.forecast['fadedRating']):
+            rating.append(STAR_EMPTY_URL)
+        return rating
+
+    def get_chart(self, chart_type):
+        """Get URL for chart type of this forecast."""
+        if chart_type == 'swell':
+            return self.forecast['charts']['swell']
+        if chart_type == 'period':
+            return self.forecast['charts']['period']
+        if chart_type == 'wind':
+            return self.forecast['charts']['wind']
+        if chart_type == 'pressure':
+            return self.forecast['charts']['pressure']
+        if chart_type == 'sst':
+            return self.forecast['charts']['sst']
+        else:
+            raise ValueError('Invalid chart type: {}'.format(chart_type))
+
+    def get_temp(self):
+        return self.forecast['condition']['temperature']
+
+    def get_wind(self):
+        return {
+                'speed': self.forecast['wind']['speed'],
+                'direction': self.forecast['wind']['compassDirection']
+                }
+
+    def _friendly_forecast(self):
+        description = "There is a {}% chance of waves breaking " \
+                "between {}{} and {}{} high."
+        return description.format(self.forecast['swell']['probability'],
+                self.forecast['swell']['minBreakingHeight'],
+                self.forecast['swell']['unit'],
+                self.forecast['swell']['maxBreakingHeight'],
+                self.forecast['swell']['unit'])
 
 
 class MagicSeaWeed():
     """Magic Seaweed API wrapper."""
 
-    def __init__(self, api_key, spot_id, fields):
+    def __init__(self, api_key, spot_id, fields, units):
         self.api_key = api_key
         self.spot_id = spot_id # int
-        self.fields = ','.join(fields) # comma seperate list: fields=timestamp,wind.*,condition.temperature
+        self.units = units # eu, uk, us
         self.headers = {
             'User-Agent': USER_AGENT
         }
+        self.fields = None
+        if fields:
+            _validate_field_types(fields)
+            self.fields = ','.join(fields) # comma separated list: fields=timestamp,wind.*,condition.temperature
+
 
     def _get_params(self):
+        if self.fields:
+            return {
+                'spot_id': self.spot_id,
+                'units': self.units,
+                'fields': self.fields
+            }
         return {
-            'spot_id': self.spot_id,
-            'fields': self.fields
+                'spot_id': self.spot_id,
+                'units': self.units
         }
 
-    def get_weather_icon(selfi, icon_num):
+    def get_weather_icon(self, icon_num):
         """Weather icon number. Absolute URL to weather icons."""
-        # Example: http://cdnimages.magicseaweed.com/30×30/{{ICON NUMBER}}.png.
         return requests.Request(HTTP_GET, CDN_URL.format(icon_num)).prepare().url
 
-    def get_chart_url(self, chart_type):
-        """Get URL for chart type of this instantiation."""
-        return requests.Request(HTTP_GET, DASHBOARD_URL).prepare().url
-
-
-
-    def get_incidents(self):
-        """Get incidents."""
-        resp = requests.get(CRIME_URL, params=self._get_params(), headers=self.headers)
-        incidents = []  # type: List[Dict[str, str]]
+    def get_forecast(self):
+        """Get forecast."""
+        resp = requests.get(MSW_URL.format(self.api_key), params=self._get_params())  #, headers=self.headers)
+        forecasts = []  # type: List[Dict[str, str]]
+        images = []
         data = resp.json()
-        if ATTR_CRIMES not in data:
-            return incidents
-        for incident in data.get(ATTR_CRIMES):
-            if _validate_incident_date_range(incident, self.days):
-                if _incident_in_types(incident, self.incident_types):
-                    incidents.append(_incident_transform(incident))
-        return incidents
+        if ERROR_RESPONSE in data:
+            return forecasts
+        for forecast in data:
+            _forecast = MSW_Forecast(forecast) 
+            forecasts.append(_forecast)
+        return forecasts[(len(forecasts)-1)]._friendly_forecast()
