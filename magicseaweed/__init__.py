@@ -95,8 +95,7 @@ class MSW_Forecast():
     def get_rating(self):
         """Return array of URLs for star rating."""
         rating = []
-        if 'fadedRating' not in self.forecast or \ 
-            'solidRating' not in self.forecast:
+        if 'fadedRating' not in self.forecast or 'solidRating' not in self.forecast:
             raise ValueError('No rating in this forecast')
         for i in range(0,self.forecast.get('solidRating')):
             rating.append(STAR_FILLED_URL)
@@ -190,7 +189,9 @@ class MagicSeaWeed():
         if ERROR_RESPONSE in data:
             return forecasts
         for forecast in data:
-            forecasts.append(_forecast_transform(MSW_Forecast(forecast)))
+            #forecasts.append(_forecast_transform(MSW_Forecast(forecast)))
+            forecasts.append(MSW_Forecast(forecast))
         if num_days:
             return _get_num_days_forecasts(forecasts, 3)
+        _chart_gif(forecasts[0].get_chart('swell'), 'Swell')
         return forecasts

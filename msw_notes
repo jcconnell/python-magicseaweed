@@ -1,0 +1,6 @@
+Important Info:
+
+- 40 -  "timestamp" entries returned in one response
+- 3hr - rough intervals between timestamps
+- 8 - forecasts per day
+- 5 - days of forecast data in one response
