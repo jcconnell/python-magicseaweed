@@ -1,7 +1,7 @@
 import requests
 import threading
 
-#from forecastio.models import Forecast
+from magicseaweed.models import MSW_Forecast
 
 MSW_URL = 'http://magicseaweed.com/api/{}/forecast'
 HTTP_GET = 'GET'
@@ -33,7 +33,7 @@ def _validate_field_types(field_types):
             raise ValueError('Invalid field type: {}'.format(field_type))
 
 
-def load_msw(api_key, spot_id, fields=None, units=None,
+def load_forecast(api_key, spot_id, fields=None, units=None,
                   callback=None):
     """
         This function builds the request url
@@ -51,9 +51,9 @@ def load_msw(api_key, spot_id, fields=None, units=None,
                     location of spot_id. eu, uk, us are available
     """
 
-    param = {'spot_id': spot_id}
+    params = {'spot_id': spot_id}
     if fields:
-	_validate_field_types(fields)
+        _validate_field_types(fields)
         params['fields'] = ','.join(fields)
     if units:
         _validate_unit_types(unit)
