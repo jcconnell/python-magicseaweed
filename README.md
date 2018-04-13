@@ -62,7 +62,7 @@ The .data attributes for each DataBlock is a list of Forecast objects.
 
 
 Example Response:
-```json
+```json5
 [{
 timestamp: 1366902000,
 localTimestamp: 1366902000,
