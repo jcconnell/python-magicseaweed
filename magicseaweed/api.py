@@ -1,5 +1,6 @@
 import requests
 import threading
+import json
 
 from magicseaweed.models import MSW_Forecast
 
@@ -81,10 +82,15 @@ def get_msw(requestURL):
     msw_reponse = requests.get(requestURL)
     msw_reponse.raise_for_status()
 
-    json = msw_reponse.json()
+    json_d = msw_reponse.json()
+    #json_d = json.load(open('data.txt'))
+    #with open('data.txt', 'w') as outfile:
+    #    json.dump(json_d, outfile, sort_keys = True, indent = 4,
+    #        ensure_ascii = False)
+
     headers = msw_reponse.headers
 
-    return MSW_Forecast(json, msw_reponse, headers)
+    return MSW_Forecast(json_d, msw_reponse, headers)
 
 
 def load_async(url, callback):

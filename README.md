@@ -7,17 +7,62 @@ Provides basic API to [Magic Seaweed](https://magicseaweed.com/developer/api).
 
 `pip install magicseaweed`
 
+## Requirements
+
+- You need an API key to use it. Check the notes section for signup info.
+
 ## Usage
 
-```python
-from magicseaweed import MagicSeaWeed
+Basic Use
+#########
 
-msw = MagicSeaWeed("your-api-key", spot_id, ['timestamp','swell','charts'], 'us')
-print(msw_ponce.get_forecasts())
-```
+No familiarity with the Magic Seaweed API is required to use this package. For reference, you can find their API documentation here: [Magic Seaweed Docs](https://magicseaweed.com/developer/forecast-api)
+
+To use the wrapper:
+
+.. code-block:: python
+
+    import magicseaweed
+    import json
+
+    key = "YOUR API KEY"
+    spot_id = 348
+
+    forecast = magicseaweed.load_forecast(key, spot_id, None, None, None)
+    current = forecast.current()
+    print(current.summary)
+
+	...
+
+The ``load_forecast()`` method has a few optional parameters. Your API key, and a spot id are the only required parameters.
+
+Use the ``forecast.DataBlockType()`` eg. ``current()``, ``next()``, ``six_hour()``, ``daily()``, ``next_day()``, ``sunrise()``, ``sunset()``, ``all()``  methods to load the data you are after.
+
+These methods return a single forecast:
+- ``current()``
+- ``next()``
+- ``next_day()``
+- ``sunrise()``
+- ``sunset()``
+
+All other methods return a block of forecasts.
+
+.. code-block:: python
+
+    current = forecast.current()
+    print(current.summary)
+
+
+The .data attributes for each DataBlock is a list of Forecast objects.
+
+.. code-block:: python
+    six_hour = forecast.six_hour()
+    for third_hour in six_hour.data:
+        print(third_hour.summary)
+
 
 Example Response:
-```jscon
+```json
 [{
 timestamp: 1366902000,
 localTimestamp: 1366902000,

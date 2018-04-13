@@ -1,9 +1,11 @@
-#from forecastio.utils import UnicodeMixin, PropertyUnavailable
+from magicseaweed.utils import PropertyUnavailable
 import datetime
 import ephem
 import requests
 
 DEBUG = False
+CDN_URL = "http://cdnimages.magicseaweed.com/30x30/{}.png"
+HTTP_GET = 'GET'
 FIELD_TYPES = ['timestamp', 'localTimestamp', 'issueTimestamp', 'fadedRating',
                'solidRating', 'threeHourTimeText', 'swell.minBreakingHeight',
                'swell.*', 'swell.absMinBreakingHeight', 'swell.maxBreakingHeight',
@@ -65,19 +67,41 @@ class MSW_Forecast():
                     print("i.localtimestamp: " + str(datetime.datetime.utcfromtimestamp(i.localTimestamp)))
                 return i
 
+    def sunset(self, lat, lon):
+        here = ephem.Observer()
+        here.lat, here.lon, here.date = lat, lon, datetime.datetime.utcnow()
+        utc_sunset = here.next_setting(ephem.Sun())
+        if DEBUG:
+            sunset = ephem.localtime(utc_sunset)
+        abs_td = datetime.timedelta.max
+        for i in self._msw_data('all').data:
+            if DEBUG:
+                print("i.timestamp: " + str(datetime.datetime.utcfromtimestamp(i.timestamp)))
+            this_td = utc_sunset.datetime() - datetime.datetime.utcfromtimestamp(i.timestamp)
+            if this_td >= datetime.timedelta(milliseconds=1) and this_td < abs_td:
+                abs_td = this_td
+            else:
+                if DEBUG:
+                    print("utc_sunset: " + str(utc_sunset.datetime()))
+                    print("sunset: " + str(sunset))
+                    print("this i.timestamp: " + str(datetime.datetime.utcfromtimestamp(i.timestamp)))
+                    print("i.localtimestamp: " + str(datetime.datetime.utcfromtimestamp(i.localTimestamp)))
+                return i
+
     def all(self):
         return self._msw_data('all')
 
     def _msw_data(self, key):
-        keys = ['current', 'next', 'six_hour', 'daily', 'all']
+        keys = ['current', 'next', 'six_hour', 'daily', 'next_day', 'all', 'sunrise', 'sunset']
         msw_key = FIELD_TYPES
         try:
-            response = requests.get(self.response.url).json()
-            self.json = response
+            self.json = requests.get(self.response.url).json()
             if key == 'current':
                 return ForecastDataPoint(self.json[0], 'Current')
             if key == 'next':
                 return ForecastDataPoint(self.json[1], 'Next')
+            if key == 'next_day':
+                return ForecastDataPoint(self.json[7])
             if key == 'six_hour':
                 return ForecastDataBlock(self.json[0::2], 'Six Hour') # 2 * 3hr = 6hrs
             if key == 'daily':
@@ -178,3 +202,15 @@ class ForecastDataPoint():
         for i in range(0,self.d.get('fadedRating')):
             rating.append(STAR_EMPTY_URL)
         return rating
+
+    def _get_rating_num(self):
+        """Return decimal representation of star rating."""
+        rating = self.d.get('solidRating') + (self.d.get('fadedRating') * 0.1)
+        return rating
+
+    def _get_weather_icon(self):
+        """Weather icon number. Absolute URL to weather icons."""
+        icon_num = self.d.get('condition').get('weather')
+        return requests.Request(HTTP_GET, CDN_URL.format(icon_num)).prepare().url
+
+
