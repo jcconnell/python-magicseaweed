@@ -13,22 +13,22 @@ Provides basic API to [Magic Seaweed](https://magicseaweed.com/developer/api).
 
 ## Usage
 
-######## Basic Use
+####### Basic Use
 
 No familiarity with the Magic Seaweed API is required to use this package. For reference, you can find their API documentation here: [Magic Seaweed Docs](https://magicseaweed.com/developer/forecast-api)
 
 To use the wrapper:
 
 ```python
-    import magicseaweed
-    import json
+import magicseaweed
+import json
 
-    key = "YOUR API KEY"
-    spot_id = 348
+key = "YOUR API KEY"
+spot_id = 348
 
-    forecast = magicseaweed.load_forecast(key, spot_id, None, None, None)
-    current = forecast.current()
-    print(current.summary)
+forecast = magicseaweed.load_forecast(key, spot_id, None, None, None)
+current = forecast.current()
+print(current.summary)
 ```
 
 
@@ -46,17 +46,17 @@ These methods return a single forecast:
 All other methods return a block of forecasts.
 
 ```python
-    current = forecast.current()
-    print(current.summary)
+current = forecast.current()
+print(current.summary)
 ```
 
 
 The .data attributes for each DataBlock is a list of Forecast objects.
 
 ```python
-    six_hour = forecast.six_hour()
-    for third_hour in six_hour.data:
-        print(third_hour.summary)
+six_hour = forecast.six_hour()
+for third_hour in six_hour.data:
+    print(third_hour.summary)
 ```
 
 Example Response:
