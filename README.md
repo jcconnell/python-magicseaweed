@@ -24,7 +24,7 @@ import magicseaweed
 import json
 
 key = "YOUR API KEY"
-spot_id = 348
+spot_id = 348 # Change to your spot id
 
 forecast = magicseaweed.load_forecast(key, spot_id, None, None, None)
 current = forecast.current()
