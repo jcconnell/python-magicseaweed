@@ -13,7 +13,7 @@ Provides basic API to [Magic Seaweed](https://magicseaweed.com/developer/api).
 
 ## Usage
 
-####### Basic Use
+###### Basic Use
 
 No familiarity with the Magic Seaweed API is required to use this package. For reference, you can find their API documentation here: [Magic Seaweed Docs](https://magicseaweed.com/developer/forecast-api)
 
@@ -36,20 +36,12 @@ The ``load_forecast()`` method has a few optional parameters. Your API key, and 
 
 Use the ``forecast.DataBlockType()`` eg. ``current()``, ``next()``, ``six_hour()``, ``daily()``, ``next_day()``, ``sunrise()``, ``sunset()``, ``all()``  methods to load the data you are after.
 
-These methods return a single forecast:
+The methods below return a single forecast. All other methods return a block of forecasts.
 - ``current()``
 - ``next()``
 - ``next_day()``
 - ``sunrise()``
 - ``sunset()``
-
-All other methods return a block of forecasts.
-
-```python
-current = forecast.current()
-print(current.summary)
-```
-
 
 The .data attributes for each DataBlock is a list of Forecast objects.
 
