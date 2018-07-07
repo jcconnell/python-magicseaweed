@@ -40,7 +40,7 @@ for forecast in bethune_future.data:
 ```
 
 
-The ``MSW_forecast()`` method has a few optional parameters. Your API key, and a spot id are the only required parameters.
+The ``MSW_forecast()`` class has a few optional parameters. Your API key, and a spot id are the only required parameters.
 
 Use the ``forecast.DataBlockType()`` eg. ``current()``, ``future()``, ``all()``, ``manual()``, methods to load the data you are after.
 
