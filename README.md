@@ -132,12 +132,14 @@ charts: {
 This class is for interacting with the MSW API. You can use it's functions to get points or series of data for different time periods.
 
 **Parameters**:
+
 	- **api_key** - Your API key from https://magicseaweed.com/developer/forecast-api
 	- **spot_id** - The ID of a location, available from the URL when visiting the corresponding spot on the Magic Seaweed website. IE '616' in http://magicseaweed.com/Pipeline-Backdoor-Surf-Report/616/
 	- **fields** - (optional) Comma separated list of fields to include in the request URL. Defaults to none, which returns all information. Specifying fields may reduce response time. Example: ['timestamp','wind.\*','condition.temperature']
 	- **units** - (optional) A string of the preferred unit of measurement. Defaults to unit at location of spot_id. eu, uk, us are available
 
 **Methods**
+
 	- **get_current()**
         - This fucntion returns a single datapoint representing the forecast providedd by MSW if you called the API with ``start=dt.now().timestamp()`` and ``end=dt.now().timestamp()``. Returns a **ForecastDataPoint**.
 	- **get_future()**
