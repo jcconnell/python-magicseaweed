@@ -5,7 +5,7 @@ Provides basic API to [Magic Seaweed](https://magicseaweed.com/developer/api).
 
 ## Install
 
-`pip install magicseaweed`
+`pip install python-magicseaweed`
 
 ## Requirements
 
@@ -132,25 +132,22 @@ charts: {
 This class is for interacting with the MSW API. You can use it's functions to get points or series of data for different time periods.
 
 **Parameters**:
-
-	- **api_key** - Your API key from https://magicseaweed.com/developer/forecast-api
-	- **spot_id** - The ID of a location, available from the URL when visiting the corresponding spot on the Magic Seaweed website. IE '616' in http://magicseaweed.com/Pipeline-Backdoor-Surf-Report/616/
-	- **fields** - (optional) Comma separated list of fields to include in the request URL. Defaults to none, which returns all information. Specifying fields may reduce response time. Example: ['timestamp','wind.\*','condition.temperature']
-	- **units** - (optional) A string of the preferred unit of measurement. Defaults to unit at location of spot_id. eu, uk, us are available
+  * **api_key** - Your API key from https://magicseaweed.com/developer/forecast-api
+  * **spot_id** - The ID of a location, available from the URL when visiting the corresponding spot on the Magic Seaweed website. IE '616' in http://magicseaweed.com/Pipeline-Backdoor-Surf-Report/616/
+  * **fields** - (optional) Comma separated list of fields to include in the request URL. Defaults to none, which returns all information. Specifying fields may reduce response time. Example: ['timestamp','wind.*','condition.temperature']
+  * **units** - (optional) A string of the preferred unit of measurement. Defaults to unit at location of spot_id. eu, uk, us are available
 
 **Methods**
-
-	- **get_current()**
+  * **get_current()**
         - This fucntion returns a single datapoint representing the forecast providedd by MSW if you called the API with ``start=dt.now().timestamp()`` and ``end=dt.now().timestamp()``. Returns a **ForecastDataPoint**.
-	- **get_future()**
+  * **get_future()**
         - This fucntion returns a group of datapoints, beginning with the current forecast and each representing the forecast for a 3 hour period over a 96 hour series (4 days). Returns a **ForecastDataBlock**.
-	- **get_all()**
+  * **get_all()**
         - This function returns the default MSW response if no time parameters are added. This is usually 5 days of forecasts in 3 hour intervals. You may receive some forecasts for expired times. Returns a **ForecastDataBlock**.
-	- **get_manual(start, end)**
+  * **get_manual(start, end)**
         - This fucntion allows requests for manually selected periods of time using the start and end parameters. Returns a **ForecastDataBlock**.
-        - Parameters:
-            - **start** - A local timestamp from which the forecast should being. Example: ``datetime.now().timestamp()``
-    	    - **end** - A local timestamp from which the forecast should end. Example: ``datetime.now().timestamp()``
+    - **start** - A local timestamp from which the forecast should being. Example: ``datetime.now().timestamp()``
+    - **end** - A local timestamp from which the forecast should end. Example: ``datetime.now().timestamp()``
 
 ----------------------------------------------------
 
@@ -161,14 +158,14 @@ This class is for interacting with the MSW API. You can use it's functions to ge
 Contains data about a forecast over time and the HTTP response from the Magicseaweed.
 
 **Attributes**
-	- **http_headers**
-		- A dictionary of response headers.
-	- **response**
-		- The Response object returned from requests request.get() method. See https://requests.readthedocs.org/en/latest/api/#requests.Response
-	- **summary**
-		- A human-readable text summary of this data block.
-	- **data**
-		- An array of **ForecastioDataPoint** objects (see below), ordered by time.
+  - **http_headers**
+    - A dictionary of response headers.
+  - **response**
+    - The Response object returned from requests request.get() method. See https://requests.readthedocs.org/en/latest/api/#requests.Response
+  - **summary**
+    - A human-readable text summary of this data block.
+  - **data**
+    - An array of **ForecastioDataPoint** objects (see below), ordered by time.
 
 ----------------------------------------------------
 
@@ -179,33 +176,32 @@ Contains data about a forecast over time and the HTTP response from the Magicsea
 Contains data about a forecast at a particular time.
 
 Data points have many attributes, but **not all of them are always available**. Some commonly used ones are:
-
-    -	**localTime**
-		- The time at which the forecast begins, adjusted for the spot's timezone.
-	-	**swell_maxBreakingHeight**
-		- A numerical value representing the height of the maxmimum wave for this forecast.
+  - **localTime**
+    - The time at which the forecast begins, adjusted for the spot's timezone.
+  - **swell_maxBreakingHeight**
+    - A numerical value representing the height of the maxmimum wave for this forecast.
 
 **Attributes**
-    - **http_headers**
-		- A dictionary of response headers.
-	- **response**
-		- The Response object returned from requests request.get() method. See https://requests.readthedocs.org/en/latest/api/#requests.Response
-	- **summary**
-		- A human-readable text summary of this data block.
-	- **d**
-		- A multi-leve dictionary of the JSON response from the MSW API.
-	- **f_d**
-		- A flattened dictionary of the the JSON response from the MSW API.
-	- **attrs**
-		- A human-readable form of the attributes from this forecast.
+  - **http_headers**
+    - A dictionary of response headers.
+  - **response**
+    - The Response object returned from requests request.get() method. See https://requests.readthedocs.org/en/latest/api/#requests.Response
+  - **summary**
+	- A human-readable text summary of this data block.
+  - **d**
+	- A multi-leve dictionary of the JSON response from the MSW API.
+  - **f_d**
+	- A flattened dictionary of the the JSON response from the MSW API.
+  - **attrs**
+	- A human-readable form of the attributes from this forecast.
 
 **Methods**
-	- **get_chart_url()**
-        - This fucntion returns a URL formatted for the chart type ``[swell, period, wind, sst, pressure]`` of this forecast.
-	- **get_swell_url()**
-        - This fucntion returns a URL formatted for the swell direction of this forecast.
-	- **get_wind_url()**
-        - This fucntion returns a URL formatted for wind swell direction of this forecast.
+  - **get_chart_url()**
+    - This fucntion returns a URL formatted for the chart type ``[swell, period, wind, sst, pressure]`` of this forecast.
+  - **get_swell_url()**
+    - This fucntion returns a URL formatted for the swell direction of this forecast.
+  - **get_wind_url()**
+    - This fucntion returns a URL formatted for wind swell direction of this forecast.
 
 For a full list of ForecastDataPoint attributes and attribute descriptions, take a look at the table from the Magicseaweeddocumentation (https://magicseaweed.com/developer/forecast-api). NOTE: The MSW API accepts fields in dot.notation. To access the respective attribute, use snake_case notation.
 
