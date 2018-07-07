@@ -1,36 +1,22 @@
-import magicseaweed
-#from magicseaweed import MagicSeaWeed
-import json
+from magicseaweed import MSW_Forecast
+import os
+import pprint
 
-key = "f34cda31d67756ac87f25854c081e57d"
-secret = "53311f6e50773310e6bacb6b8e377f6c"
+api_key = os.environ.get('MSW_API_KEY')
 ponce_id = 348
 bethune_id= 371
-lat = "28.869533"
-lon = "-81.296013"
+pp = pprint.PrettyPrinter(indent=4)
 
 
-#msw_ponce = MagicSeaWeed(key, ponce_id, None, 'us')
-#msw_ponce = MagicSeaWeed(key, ponce_id, ['timestamp','swell.*','charts.*'], 'us')
-#print(msw_ponce.get_forecasts(num_days=3)[0].get_weather_icon())
-#print(len(msw_ponce.get_forecasts()))
+ponce_forecast = MSW_Forecast(api_key, ponce_id)
+ponce_now = ponce_forecast.current()
 
-#print(json.dumps(msw_ponce.get_forecast(), indent=2))
-#msw_bethune = MagicSeaWeed(key, msw_ponce, None)
+print(ponce_now.attrs)
 
+bethune_forecast = MSW_Forecast(api_key, bethune_id)
+bethune_future = bethune_forecast.day()
+print(bethune_future.summary)
 
-
-forecast = magicseaweed.load_forecast(key, ponce_id, None, None, None)
-current = forecast.current()
-print(current.summary)
-
-next = forecast.next()
-print(next.summary)
-
-#six_hour = forecast.six_hour()
-#for hour in six_hour.data:
-#    print(hour.summary)
-
-sunrise = forecast.sunrise(lat, lon)
-print(sunrise.summary)
-#print(sunrise.local_time)
+for forecast in bethune_future.data:
+    pp.pprint(forecast.attrs)
+    pp.pprint(forecast.get_chart_url('swell'))
