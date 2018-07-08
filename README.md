@@ -5,7 +5,7 @@ Provides basic API to [Magic Seaweed](https://magicseaweed.com/developer/api).
 
 ## Install
 
-`pip install python-magicseaweed`
+`pip install magicseaweed`
 
 ## Requirements
 
