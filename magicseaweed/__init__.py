@@ -235,18 +235,11 @@ class ForecastDataPoint():
         except:
             return PropertyUnavailable("Property {} is unavailable for this forecast".format(name))
 
-    def get_chart_url(self, chart_type):
-        """Get url for chart."""
-        if chart_type not in CHART_TYPES:
-            raise ValueError('Invalid chart type: {}'.format(chart_type))
-        chart_type = "charts.".format(chart_type)
-        return self.f_d.get(chart_type, None)
-
     def get_swell_url(self, swell_type):
         """Get swell arrow url."""
         if swell_type not in SWELL_TYPES:
             raise ValueError('Invalid swell type: {}'.format(swell_type))
-        key = "swell.components.{}.direction".format(swell_type)
+        key = "swell_components_{}_direction".format(swell_type)
         swell_direction = self.f_d.get(key)
         if swell_direction is not None:
             rounded = int(5 * round(float(swell_direction)/5))
@@ -254,7 +247,7 @@ class ForecastDataPoint():
 
     def get_wind_url(self):
         """Get wind arrow url."""
-        wind_direction = self.f_d.get('wind.direction', None)
+        wind_direction = self.f_d.get('wind_direction', None)
         if wind_direction is not None:
             rounded = int(5 * round(float(wind_direction)/5))
             return WIND_ARROW_URL.format(rounded)

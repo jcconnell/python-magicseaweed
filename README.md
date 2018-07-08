@@ -155,7 +155,7 @@ This class is for interacting with the MSW API. You can use it's functions to ge
 *class* ForecastDataBlock
 ---------------------------------------------
 
-Contains data about a forecast over time and the HTTP response from the Magicseaweed.
+Contains data about a forecast over time and the HTTP response from Magicseaweed.
 
 **Attributes**
   - **http_headers**
@@ -173,10 +173,10 @@ Contains data about a forecast over time and the HTTP response from the Magicsea
 *class* ForecastDataPoint
 ---------------------------------------------
 
-Contains data about a forecast at a particular time.
+Contains data about a forecast at a particular time and the HTTP response from Magicseaweed.
 
 Data points have many attributes, but **not all of them are always available**. Some commonly used ones are:
-  - **localTime**
+  - **localTimestamp**
     - The time at which the forecast begins, adjusted for the spot's timezone.
   - **swell_maxBreakingHeight**
     - A numerical value representing the height of the maxmimum wave for this forecast.
@@ -187,23 +187,21 @@ Data points have many attributes, but **not all of them are always available**. 
   - **response**
     - The Response object returned from requests request.get() method. See https://requests.readthedocs.org/en/latest/api/#requests.Response
   - **summary**
-	- A human-readable text summary of this data block.
+	- A human-readable text summary of this data point.
   - **d**
-	- A multi-leve dictionary of the JSON response from the MSW API.
+	- A dictionary of the JSON response from the MSW API.
   - **f_d**
-	- A flattened dictionary of the the JSON response from the MSW API.
+	- A flattened dictionary of the the JSON response from the MSW API. Keys are compressed using the '_' character.
   - **attrs**
 	- A human-readable form of the attributes from this forecast.
 
 **Methods**
-  - **get_chart_url()**
-    - This fucntion returns a URL formatted for the chart type ``[swell, period, wind, sst, pressure]`` of this forecast.
   - **get_swell_url()**
     - This fucntion returns a URL formatted for the swell direction of this forecast.
   - **get_wind_url()**
     - This fucntion returns a URL formatted for wind swell direction of this forecast.
 
-For a full list of ForecastDataPoint attributes and attribute descriptions, take a look at the table from the Magicseaweeddocumentation (https://magicseaweed.com/developer/forecast-api). NOTE: The MSW API accepts fields in dot.notation. To access the respective attribute, use snake_case notation.
+For a full list of ForecastDataPoint attributes and attribute descriptions, take a look at the table from the Magicseaweed [documentation](https://magicseaweed.com/developer/forecast-api). NOTE: While the MSW API accepts fields in dot.notation, use snake_case to access these attributes in a ForecastDataPoint.
 
 ----------------------------------------------------
 
