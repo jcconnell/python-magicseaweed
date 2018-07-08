@@ -4,19 +4,20 @@ import pprint
 
 api_key = os.environ.get('MSW_API_KEY')
 ponce_id = 348
-bethune_id= 371
+bethune_id= 3771
 pp = pprint.PrettyPrinter(indent=4)
 
-
 ponce_forecast = MSW_Forecast(api_key, ponce_id)
-ponce_now = ponce_forecast.current()
-
+ponce_now = ponce_forecast.get_current()
 print(ponce_now.attrs)
 
 bethune_forecast = MSW_Forecast(api_key, bethune_id)
-bethune_future = bethune_forecast.day()
+bethune_future = bethune_forecast.get_future()
 print(bethune_future.summary)
 
 for forecast in bethune_future.data:
     pp.pprint(forecast.attrs)
-    pp.pprint(forecast.get_chart_url('swell'))
+    pp.pprint(forecast.charts_swell)
+    pp.pprint(forecast.get_swell_url('combined'))
+    pp.pprint(forecast.get_wind_url())
+
