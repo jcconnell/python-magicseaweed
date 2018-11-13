@@ -74,6 +74,7 @@ def _forecast_transform(f_d):
     abs_max = f_d.get('swell_absMaxBreakingHeight', None)
     min = f_d.get('swell_minBreakingHeight', None)
     abs_min = f_d.get('swell_absMinBreakingHeight', None)
+    swell_dir = f_d.get('swell_components_combined_compassDirection', None)
     swell_unit = f_d.get('swell_unit', None)
     probability = f_d.get('swell_probability', None)
     period = f_d.get('swell_components_combined_period', None)
@@ -93,6 +94,7 @@ def _forecast_transform(f_d):
             'max_breaking_height': "{} {}".format(max, swell_unit),
             'min_breaking_height': "{} {}".format(min, swell_unit),
             'probability': "{}%".format(probability),
+            'swell_direction': "{}".format(swell_dir),
             'swell_period': "{} seconds".format(period),
             'wind_chill': "{}°".format(wind_chill),
             'wind_direction': "{}° {}".format(wind_degrees, wind_direction),
