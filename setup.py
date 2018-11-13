@@ -4,7 +4,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='magicseaweed',
-    version='1.0.2',
+    version='1.0.3',
     description='Provides API wrapper to magicseaweed.com.',
     url='https://github.com/jcconnell/python-magicseaweed',
     license='MIT',
