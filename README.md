@@ -221,7 +221,7 @@ Not affiliated with magicseaweed.com. Use at your own risk.
 
 ## Obtain an API Key:
 
-The Magic Seaweed API is currently in beta. To obtain an API key, please follow the instructions available here [Sign Up](https://magicseaweed.com/developer/sign-up)
+The Magic Seaweed API is currently in beta. To obtain an API key, please follow the instructions available here [Sign Up](https://magicseaweed.com/docs/api/60/)
 - Email [general@magicseaweed.com](mailto:general@magicseaweed.com) with the following information
 - Mention that you’ve read and agree our Terms and Conditions. We’ll be unable to offer access unless this is the case.
 - A URL for your application if web based
