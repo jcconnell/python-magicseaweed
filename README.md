@@ -1,7 +1,9 @@
 python-magicseaweed
 ==============================================================================================================================================================================================
 
-Provides basic API to [Magic Seaweed](https://magicseaweed.com/developer/api).
+Provides basic API to [Magic Seaweed](https://magicseaweed.com/developer/api). 
+
+Note: As of 7/8/2022, it was reported that Magicseaweed is not distributing new API keys. This package still works for those who have an API key. Magicseaweed has not stated when or if they will start distributing API keys again. Reference the ["Obtain an API Key"](https://github.com/jcconnell/python-magicseaweed/edit/master/README.md#obtain-an-api-key) section below if you'd like to contact them for more information.
 
 ## Install
 
@@ -215,9 +217,9 @@ Pull requests welcome.
 Not affiliated with magicseaweed.com. Use at your own risk.
 
 ## TODO:
-- Compile chart into animated GIFs for the ForecastDataBlocks
+- [ ] Compile chart into animated GIFs for the ForecastDataBlocks
 
-## NOTES:
+## Obtain an API Key:
 
 The Magic Seaweed API is currently in beta. To obtain an API key, please follow the instructions available here [Sign Up](https://magicseaweed.com/developer/sign-up)
 - Email [general@magicseaweed.com](mailto:general@magicseaweed.com) with the following information
@@ -226,5 +228,5 @@ The Magic Seaweed API is currently in beta. To obtain an API key, please follow 
 - Your business or personal name
 - A name for your application and some very basic details
 
-## REFERENCES:
+## References:
 - https://magicseaweed.com/developer/forecast-api
