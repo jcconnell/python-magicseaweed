@@ -3,14 +3,11 @@ from datetime import datetime as dt
 import requests
 import threading
 import json
-
 try:
-    from collections.abc import MutableMapping
+    import collections.abc
 except ImportError:
-    from collections import MutableMapping
-
-
-
+    import collections
+    
 MSW_URL = 'http://magicseaweed.com/api/{}/forecast'
 WEATHER_URL = 'http://cdnimages.magicseaweed.com/30x30/{}.png'
 SWELL_ARROW_URL = 'http://cdnimages.magicseaweed.com/swellArrows/{}.png'
