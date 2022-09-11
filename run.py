@@ -1,10 +1,13 @@
 from magicseaweed import MSW_Forecast
+from dotenv import load_dotenv
 import os
 import pprint
 
-api_key = os.environ.get('MSW_API_KEY')
+load_dotenv()
+
+api_key = os.getenv('MSW_API_KEY')
 ponce_id = 348
-bethune_id= 3771
+bethune_id = 3771
 pp = pprint.PrettyPrinter(indent=4)
 
 ponce_forecast = MSW_Forecast(api_key, ponce_id)
@@ -20,4 +23,3 @@ for forecast in bethune_future.data:
     pp.pprint(forecast.charts_swell)
     pp.pprint(forecast.get_swell_url('combined'))
     pp.pprint(forecast.get_wind_url())
-

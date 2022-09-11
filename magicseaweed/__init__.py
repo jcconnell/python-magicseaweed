@@ -209,7 +209,7 @@ class ForecastDataBlock():
             start = d[0].attrs['begins']
             end = d[-1].attrs['begins']
             return "{} forecasts from {} to {}".format(num, start, end)
-        except:
+        except KeyError:
             return "No forecasts."
 
 
@@ -229,7 +229,7 @@ class ForecastDataPoint():
             max_breaking_height = self.attrs['max_breaking_height']
             local_tm = self.attrs['begins']
             return "{} - {} at {}".format(min_breaking_height, max_breaking_height, local_tm)
-        except:
+        except KeyError:
             return None
 
     def __getattr__(self, name):
@@ -238,7 +238,7 @@ class ForecastDataPoint():
             raise ValueError("{} not a valid field type".format(dot))
         try:
             return self.f_d[name]
-        except:
+        except KeyError:
             return PropertyUnavailable("Property {} is unavailable for this forecast".format(name))
 
     def get_swell_url(self, swell_type):
