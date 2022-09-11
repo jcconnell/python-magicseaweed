@@ -1,0 +1,6 @@
+{
+    "error_response": {
+        "code": 501,
+        "error_msg": "Invalid parameters were supplied and did not pass our validation, please double check your request."
+    }
+}

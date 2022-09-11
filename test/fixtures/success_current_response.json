@@ -1,0 +1,65 @@
+[
+    {
+        "timestamp": 1662858000,
+        "localTimestamp": 1662843600,
+        "issueTimestamp": 1662832800,
+        "fadedRating": 0,
+        "solidRating": 2,
+        "swell": {
+            "absMinBreakingHeight": 2.33,
+            "absMaxBreakingHeight": 3.64,
+            "probability": 100,
+            "unit": "ft",
+            "minBreakingHeight": 2,
+            "maxBreakingHeight": 4,
+            "components": {
+                "combined": {
+                    "height": 4,
+                    "period": 11,
+                    "direction": 249.94,
+                    "compassDirection": "ENE"
+                },
+                "primary": {
+                    "height": 2.5,
+                    "period": 12,
+                    "direction": 243.62,
+                    "compassDirection": "ENE"
+                },
+                "secondary": {
+                    "height": 2.5,
+                    "period": 9,
+                    "direction": 227.11,
+                    "compassDirection": "NE"
+                },
+                "tertiary": {
+                    "height": 1.6,
+                    "period": 11,
+                    "direction": 270.16,
+                    "compassDirection": "E"
+                }
+            }
+        },
+        "wind": {
+            "speed": 1,
+            "direction": 334,
+            "compassDirection": "SSE",
+            "chill": 90,
+            "gusts": 2,
+            "unit": "mph"
+        },
+        "condition": {
+            "pressure": 1017,
+            "temperature": 80,
+            "weather": "18",
+            "unitPressure": "mb",
+            "unit": "f"
+        },
+        "charts": {
+            "swell": "https://charts-s3.msw.ms/live/wave/2022091000/750/21-1662854400-24.gif",
+            "period": "https://charts-s3.msw.ms/live/wave/2022091000/750/21-1662854400-25.gif",
+            "wind": "https://charts-s3.msw.ms/live/gfs/2022091012/750/21-1662854400-4.gif",
+            "pressure": "https://charts-s3.msw.ms/live/gfs/2022091012/750/21-1662854400-3.gif",
+            "sst": "https://charts-s3.msw.ms/archive/sst/750/21-1662854400-10.gif"
+        }
+    }
+]
