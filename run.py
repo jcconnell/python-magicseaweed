@@ -1,7 +1,7 @@
-from magicseaweed import MSW_Forecast
-from dotenv import load_dotenv
 import os
 import pprint
+import magicseaweed
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -10,13 +10,15 @@ ponce_id = 348
 bethune_id = 3771
 pp = pprint.PrettyPrinter(indent=4)
 
-ponce_forecast = MSW_Forecast(api_key, ponce_id)
+ponce_forecast = magicseaweed.MSW_Forecast(api_key, ponce_id)
 ponce_now = ponce_forecast.get_current()
 print(ponce_now.attrs)
 
-bethune_forecast = MSW_Forecast(api_key, bethune_id)
+bethune_forecast = magicseaweed.MSW_Forecast(api_key, bethune_id)
 bethune_future = bethune_forecast.get_future()
 print(bethune_future.summary)
+
+bethune_future.make_gif(magicseaweed.Chart_type.SWELL)
 
 for forecast in bethune_future.data:
     pp.pprint(forecast.attrs)
