@@ -266,12 +266,12 @@ class ForecastDataBlock():
         frame_one.save(gif_file, format="GIF", append_images=frames,
                        save_all=True, duration=100, loop=0)
 
-    def get_gif_bytes(self, chart_type: Chart_type) -> bytes | None:
-        gif_file = '{}.gif'.format(chart_type.value)
-        frames = self.load_charts(chart_type)
-        frame_one = frames[0]
-        frame_one.save(gif_file, format="GIF", append_images=frames,
-                       save_all=True, duration=100, loop=0)
+    # def get_gif_bytes(self, chart_type: Chart_type) -> bytes | None:
+    #     gif_file = '{}.gif'.format(chart_type.value)
+    #     frames = self.load_charts(chart_type)
+    #     frame_one = frames[0]
+    #     frame_one.tobytes(gif_file, format="GIF", append_images=frames,
+    #                       save_all=True, duration=100, loop=0)
 
     def load_charts(self, chart_type: Chart_type):
         images_frames = []
