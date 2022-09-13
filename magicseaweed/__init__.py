@@ -93,7 +93,7 @@ def _validate_field_types(field_types):
             raise ValueError('Invalid field type: {}'.format(field_type))
 
 
-def _flatten(d, parent_key='', sep='_'):
+def _flatten(d):
     """Flattens a multi-level dict, compressing keys."""
     return dict(flatten(d))
 
