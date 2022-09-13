@@ -18,6 +18,8 @@ bethune_forecast = magicseaweed.MSW_Forecast(api_key, bethune_id)
 bethune_future = bethune_forecast.get_future()
 print(bethune_future.summary)
 
+bethune_future.make_gif(magicseaweed.Chart_type.SWELL)
+
 for forecast in bethune_future.data:
     pp.pprint(forecast.attrs)
     pp.pprint(forecast.charts_swell)

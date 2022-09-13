@@ -1,7 +1,10 @@
+from ast import Str
+import requests
+from PIL import Image
+from enum import Enum
 from datetime import timedelta
 from flatten_json import flatten
 from datetime import datetime as dt
-import requests
 
 
 MSW_URL = 'http://magicseaweed.com/api/{}/forecast'
@@ -12,29 +15,68 @@ HOURS = ['12AM', '3AM', '6AM', '9AM', '12PM', '3PM', '6PM', '9PM']
 HTTP_GET = 'GET'
 ERROR_RESPONSE = 'error_response'
 UNITS = ['us', 'uk', 'eu']
-CHART_TYPES = ['swell', 'period', 'wind', 'pressure', 'sst']
 SWELL_TYPES = ['combined', 'primary', 'secondary', 'tertiary']
-FIELD_TYPES = ['timestamp', 'localTimestamp', 'issueTimestamp', 'fadedRating',
-               'solidRating', 'threeHourTimeText', 'swell.minBreakingHeight',
-               'swell.*', 'swell.absMinBreakingHeight', 'swell.maxBreakingHeight',
-               'swell.absMaxBreakingHeight', 'swell.probability', 'swell.unit',
-               'swell.components.combined.*', 'swell.components.combined.height',
-               'swell.components.combined.period', 'swell.components.combined.direction',
+FIELD_TYPES = ['timestamp',
+               'localTimestamp',
+               'issueTimestamp',
+               'fadedRating',
+               'solidRating',
+               'threeHourTimeText',
+               'swell.minBreakingHeight',
+               'swell.*',
+               'swell.absMinBreakingHeight',
+               'swell.maxBreakingHeight',
+               'swell.absMaxBreakingHeight',
+               'swell.probability',
+               'swell.unit',
+               'swell.components.combined.*',
+               'swell.components.combined.height',
+               'swell.components.combined.period',
+               'swell.components.combined.direction',
                'swell.components.combined.compassDirection',
-               'swell.components.primary.*', 'swell.components.primary.height',
-               'swell.components.primary.period', 'swell.components.primary.direction',
+               'swell.components.primary.*',
+               'swell.components.primary.height',
+               'swell.components.primary.period',
+               'swell.components.primary.direction',
                'swell.components.primary.compassDirection',
-               'swell.components.secondary.*', 'swell.components.secondary.height',
-               'swell.components.secondary.period', 'swell.components.secondary.direction',
+               'swell.components.secondary.*',
+               'swell.components.secondary.height',
+               'swell.components.secondary.period',
+               'swell.components.secondary.direction',
                'swell.components.secondary.compassDirection',
-               'swell.components.tertiary.*', 'swell.components.tertiary.height',
-               'swell.components.tertiary.period', 'swell.components.tertiary.direction',
+               'swell.components.tertiary.*',
+               'swell.components.tertiary.height',
+               'swell.components.tertiary.period',
+               'swell.components.tertiary.direction',
                'swell.components.tertiary.compassDirection',
-               'wind.*', 'wind.speed', 'wind.direction',
-               'wind.compassDirection', 'wind.chill', 'wind.gusts', 'wind.unit',
-               'condition.*', 'condition.temperature', 'condition.weather', 'condition.pressure',
-               'condition.unitPressure', 'condition.unit', 'charts.*', 'charts.swell',
-               'charts.period', 'charts.wind', 'charts.pressure', 'charts.sst']
+               'wind.*',
+               'wind.speed',
+               'wind.direction',
+               'wind.compassDirection',
+               'wind.chill',
+               'wind.gusts',
+               'wind.unit',
+               'condition.*',
+               'condition.temperature',
+               'condition.weather',
+               'condition.pressure',
+               'condition.unitPressure',
+               'condition.unit',
+               'charts.*',
+               'charts.swell',
+               'charts.period',
+               'charts.wind',
+               'charts.pressure',
+               'charts.sst'
+               ]
+
+
+class Chart_type(Enum):
+    SWELL = "swell"
+    PERIOD = "period"
+    WIND = "wind"
+    PRESSURE = "pressure"
+    SST = "sst"
 
 
 def _validate_unit_types(unit):
@@ -87,10 +129,14 @@ def _forecast_transform(f_d):
         'stars': "{} solid, {} faded".format(solid_stars, faded_stars),
         'begins': dt.utcfromtimestamp(begins).strftime("%a %-I %p"),
         'issued': dt.utcfromtimestamp(issued).strftime("%a %-I %p"),
-        'max_breaking_height': "{} {}".format(swell_max_breaking_height, swell_unit),
-        'abs_max_breaking_height': "{} {}".format(swell_abs_max_breaking_height, swell_unit),
-        'min_breaking_height': "{} {}".format(swell_min_breaking_height, swell_unit),
-        'abs_min_breaking_height': "{} {}".format(swell_abs_min_breaking_height, swell_unit),
+        'max_breaking_height': "{} {}".format(
+            swell_max_breaking_height, swell_unit),
+        'abs_max_breaking_height': "{} {}".format(
+            swell_abs_max_breaking_height, swell_unit),
+        'min_breaking_height': "{} {}".format(
+            swell_min_breaking_height, swell_unit),
+        'abs_min_breaking_height': "{} {}".format(
+            swell_abs_min_breaking_height, swell_unit),
         'probability': "{}%".format(probability),
         'swell_direction': "{}".format(swell_dir),
         'swell_period': "{} seconds".format(period),
@@ -108,15 +154,16 @@ def build_request(api_key, spot_id, fields=None, unit=None,
         API details https://magicseaweed.com/developer/forecast-api
 
         key:        Magic Seaweed API key
-        spot_id:    The ID of a location, available from the URL when visiting the
-                    corresponding spot on the Magic Seaweed website. IE '616' in
+        spot_id:    The ID of a location, available from the
+                    URL when visiting the corresponding spot on
+                    the Magic Seaweed website. IE '616' in
                     http://magicseaweed.com/Pipeline-Backdoor-Surf-Report/616/
         fields:     Comma separated list of fields to include in the request
-                    URL. Defaults to none, which returns all information. Specifying
-                    fields may reduce response time. Example:
+                    URL. Defaults to none, which returns all information.
+                    Specifying fields may reduce response time. Example:
                     fields=timestamp,wind.*,condition.temperature
-        units:      A string of the preferred unit of measurement. Defaults to unit at
-                    location of spot_id. eu, uk, us are available
+        units:      A string of the preferred unit of measurement. Defaults
+                    to unit at location of spot_id. eu, uk, us are available
         start:      Local timestamp for the start of a desired forecast range
         end:        Local timestamp for the end of the desired forecast range
     """
@@ -195,7 +242,7 @@ class MSW_Forecast():
 
 class ForecastDataBlock():
 
-    def __init__(self, d=None, headers=None, response=None):
+    def __init__(self, d: dict | None = None, headers: dict | None = None, response: requests.Response | None = None):
         d = d or {}
         self.headers = headers
         self.response = response
@@ -203,7 +250,7 @@ class ForecastDataBlock():
                      for datapoint in d]
         self.summary = self._summary(self.data)
 
-    def _summary(self, d):
+    def _summary(self, d: dict) -> str:
         try:
             num = len(d)
             start = d[0].attrs['begins']
@@ -211,6 +258,28 @@ class ForecastDataBlock():
             return "{} forecasts from {} to {}".format(num, start, end)
         except KeyError:
             return "No forecasts."
+
+    def make_gif(self, chart_type: Chart_type) -> None:
+        gif_file = '{}.gif'.format(chart_type.value)
+        frames = self.load_charts(chart_type)
+        frame_one = frames[0]
+        frame_one.save(gif_file, format="GIF", append_images=frames,
+                       save_all=True, duration=100, loop=0)
+
+    # def get_gif_bytes(self, chart_type: Chart_type) -> bytes | None:
+    #     gif_file = '{}.gif'.format(chart_type.value)
+    #     frames = self.load_charts(chart_type)
+    #     frame_one = frames[0]
+    #     frame_one.tobytes(gif_file, format="GIF", append_images=frames,
+    #                       save_all=True, duration=100, loop=0)
+
+    def load_charts(self, chart_type: Chart_type):
+        images_frames = []
+        for datapoint in self.data:
+            url = datapoint.get_chart_url(chart_type)
+            image = Image.open(requests.get(url, stream=True).raw)
+            images_frames.append(image)
+        return images_frames
 
 
 class ForecastDataPoint():
@@ -228,7 +297,8 @@ class ForecastDataPoint():
             min_breaking_height = self.attrs['min_breaking_height']
             max_breaking_height = self.attrs['max_breaking_height']
             local_tm = self.attrs['begins']
-            return "{} - {} at {}".format(min_breaking_height, max_breaking_height, local_tm)
+            return "{} - {} at {}".format(min_breaking_height,
+                                          max_breaking_height, local_tm)
         except KeyError:
             return None
 
@@ -239,7 +309,8 @@ class ForecastDataPoint():
         try:
             return self.f_d[name]
         except KeyError:
-            return PropertyUnavailable("Property {} is unavailable for this forecast".format(name))
+            return PropertyUnavailable(('Property {} is unavailable '
+                                        'for this forecast').format(name))
 
     def get_swell_url(self, swell_type):
         """Get swell arrow url."""
@@ -257,6 +328,16 @@ class ForecastDataPoint():
         if wind_direction is not None:
             rounded = int(5 * round(float(wind_direction)/5))
             return WIND_ARROW_URL.format(rounded)
+
+    def get_chart_url(self, chartType):
+        """Get url for the chart type."""
+
+        if not isinstance(chartType, Chart_type):
+            raise TypeError(
+                'chartType must be an instance of Chart_type Enum')
+
+        chart_type = '{}_{}'.format("charts", chartType.value)
+        return self.f_d.get(chart_type, None)
 
 
 class PropertyUnavailable(AttributeError):
