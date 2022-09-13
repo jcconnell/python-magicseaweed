@@ -1,9 +1,7 @@
 from datetime import timedelta
+from flatten_json import flatten
 from datetime import datetime as dt
 import requests
-import threading
-import json
-import collections
 
 
 MSW_URL = 'http://magicseaweed.com/api/{}/forecast'
@@ -38,27 +36,25 @@ FIELD_TYPES = ['timestamp', 'localTimestamp', 'issueTimestamp', 'fadedRating',
                'condition.unitPressure', 'condition.unit', 'charts.*', 'charts.swell',
                'charts.period', 'charts.wind', 'charts.pressure', 'charts.sst']
 
+
 def _validate_unit_types(unit):
     """Validate unit types"""
     if unit not in UNITS:
         raise ValueError('Invalid unit type: {}'.format(unit))
 
+
 def _validate_field_types(field_types):
     """Validate field types"""
-    for field_type in field_types:
+    chunked_field_types = field_types.split(',')
+    for field_type in chunked_field_types:
         if field_type not in FIELD_TYPES:
             raise ValueError('Invalid field type: {}'.format(field_type))
 
-def _flatten(d, parent_key='', sep='_'):
+
+def _flatten(d):
     """Flattens a multi-level dict, compressing keys."""
-    items = []
-    for k, v in d.items():
-        new_key = parent_key + sep + k if parent_key else k
-        if isinstance(v, collections.MutableMapping):
-            items.extend(_flatten(v, new_key, sep=sep).items())
-        else:
-            items.append((new_key, v))
-    return dict(items)
+    return dict(flatten(d))
+
 
 def _forecast_transform(f_d):
     """Get attribute dict from flattened forecast dict."""
@@ -70,10 +66,10 @@ def _forecast_transform(f_d):
     unit_pressure = f_d.get('condition_unitPressure', None)
     air_temp = f_d.get('condition_temperature', None)
     unit_temp = f_d.get('condition_unit', None)
-    max = f_d.get('swell_maxBreakingHeight', None)
-    abs_max = f_d.get('swell_absMaxBreakingHeight', None)
-    min = f_d.get('swell_minBreakingHeight', None)
-    abs_min = f_d.get('swell_absMinBreakingHeight', None)
+    swell_max_breaking_height = f_d.get('swell_maxBreakingHeight', None)
+    swell_abs_max_breaking_height = f_d.get('swell_absMaxBreakingHeight', None)
+    swell_min_breaking_height = f_d.get('swell_minBreakingHeight', None)
+    swell_abs_min_breaking_height = f_d.get('swell_absMinBreakingHeight', None)
     swell_dir = f_d.get('swell_components_combined_compassDirection', None)
     swell_unit = f_d.get('swell_unit', None)
     probability = f_d.get('swell_probability', None)
@@ -86,24 +82,26 @@ def _forecast_transform(f_d):
     wind_unit = f_d.get('wind_unit', None)
 
     return {
-            'air_pressure': "{}{}".format(air_pressure, unit_pressure),
-            'air_temp': "{}° {}".format(air_temp, unit_temp),
-            'stars': "{} solid, {} faded".format(solid_stars, faded_stars),
-            'begins': dt.utcfromtimestamp(begins).strftime("%a %-I %p"),
-            'issued': dt.utcfromtimestamp(issued).strftime("%a %-I %p"),
-            'max_breaking_height': "{} {}".format(max, swell_unit),
-            'min_breaking_height': "{} {}".format(min, swell_unit),
-            'probability': "{}%".format(probability),
-            'swell_direction': "{}".format(swell_dir),
-            'swell_period': "{} seconds".format(period),
-            'wind_chill': "{}°".format(wind_chill),
-            'wind_direction': "{}° {}".format(wind_degrees, wind_direction),
-            'wind_gusts': "{} {}".format(wind_gusts, wind_unit),
-            'wind_speed': "{} {}".format(wind_speed, wind_unit),
-            }
+        'air_pressure': "{}{}".format(air_pressure, unit_pressure),
+        'air_temp': "{}° {}".format(air_temp, unit_temp),
+        'stars': "{} solid, {} faded".format(solid_stars, faded_stars),
+        'begins': dt.utcfromtimestamp(begins).strftime("%a %-I %p"),
+        'issued': dt.utcfromtimestamp(issued).strftime("%a %-I %p"),
+        'max_breaking_height': "{} {}".format(swell_max_breaking_height, swell_unit),
+        'abs_max_breaking_height': "{} {}".format(swell_abs_max_breaking_height, swell_unit),
+        'min_breaking_height': "{} {}".format(swell_min_breaking_height, swell_unit),
+        'abs_min_breaking_height': "{} {}".format(swell_abs_min_breaking_height, swell_unit),
+        'probability': "{}%".format(probability),
+        'swell_direction': "{}".format(swell_dir),
+        'swell_period': "{} seconds".format(period),
+        'wind_chill': "{}°".format(wind_chill),
+        'wind_direction': "{}° {}".format(wind_degrees, wind_direction),
+        'wind_gusts': "{} {}".format(wind_gusts, wind_unit),
+        'wind_speed': "{} {}".format(wind_speed, wind_unit),
+    }
 
 
-def build_url(api_key, spot_id, fields=None, unit=None,
+def build_request(api_key, spot_id, fields=None, unit=None,
                   start=None, end=None):
     """
         This function builds the request url
@@ -124,8 +122,9 @@ def build_url(api_key, spot_id, fields=None, unit=None,
     """
     params = {'spot_id': spot_id}
     if fields:
+        fields = fields.replace(" ", "")
         _validate_field_types(fields)
-        params['fields'] = ','.join(fields)
+        params['fields'] = fields
     if unit:
         _validate_unit_types(unit)
         params['units'] = unit
@@ -133,8 +132,10 @@ def build_url(api_key, spot_id, fields=None, unit=None,
         params['start'] = start
         params['end'] = end
 
-    baseURL = requests.Request(HTTP_GET, MSW_URL.format(api_key), params=params).prepare().url
+    baseURL = requests.Request(HTTP_GET, MSW_URL.format(
+        api_key), params=params).prepare().url
     return baseURL
+
 
 def get_msw(requestURL):
     """Get MSW API response."""
@@ -145,9 +146,10 @@ def get_msw(requestURL):
     headers = msw_response.headers
 
     if ERROR_RESPONSE in json_d:
-        code = json_d.get(ERROR_RESPONE).get('code')
-        msg = json_d.get(ERROR_RESPONE).get('error_msg')
-        raise Exception('API returned error code {}. {}'.format(code, msg))
+        code = json_d.get(ERROR_RESPONSE).get('code')
+        msg = json_d.get(ERROR_RESPONSE).get('error_msg')
+        raise requests.exceptions.HTTPError(
+            'API returned error code {}. {}'.format(code, msg))
     if len(json_d) == 1:
         return ForecastDataPoint(json_d[0], headers, msw_response)
     return ForecastDataBlock(json_d, headers, msw_response)
@@ -164,8 +166,8 @@ class MSW_Forecast():
     def get_current(self):
         """Get current forecast."""
         now = dt.now().timestamp()
-        url = build_url(self.api_key, self.spot_id, self.fields,
-                        self.unit, now, now)
+        url = build_request(self.api_key, self.spot_id, self.fields,
+                            self.unit, now, now)
         return get_msw(url)
 
     def get_future(self):
@@ -174,21 +176,22 @@ class MSW_Forecast():
         four_days = now + timedelta(hours=96)
         now = now.timestamp()
         four_days = four_days.timestamp()
-        url = build_url(self.api_key, self.spot_id, self.fields,
-                        self.unit, now, four_days)
+        url = build_request(self.api_key, self.spot_id, self.fields,
+                            self.unit, now, four_days)
         return get_msw(url)
 
     def get_all(self):
         """Get default forecasts, some in past."""
-        url = build_url(self.api_key, self.spot_id, self.fields,
-                        self.unit, None, None)
+        url = build_request(self.api_key, self.spot_id, self.fields,
+                            self.unit, None, None)
         return get_msw(url)
 
     def get_manual(self, start, end):
         """Get forecasts for a manually selected time period."""
-        url = build_url(self.api_key, self.spot_id, self.fields,
-                        self.unit, start, end)
+        url = build_request(self.api_key, self.spot_id, self.fields,
+                            self.unit, start, end)
         return get_msw(url)
+
 
 class ForecastDataBlock():
 
@@ -206,8 +209,9 @@ class ForecastDataBlock():
             start = d[0].attrs['begins']
             end = d[-1].attrs['begins']
             return "{} forecasts from {} to {}".format(num, start, end)
-        except:
+        except KeyError:
             return "No forecasts."
+
 
 class ForecastDataPoint():
 
@@ -221,11 +225,11 @@ class ForecastDataPoint():
 
     def _summary(self, d):
         try:
-            min = self.attrs['min_breaking_height']
-            max = self.attrs['max_breaking_height']
+            min_breaking_height = self.attrs['min_breaking_height']
+            max_breaking_height = self.attrs['max_breaking_height']
             local_tm = self.attrs['begins']
-            return "{} - {} at {}".format(min, max, local_tm)
-        except:
+            return "{} - {} at {}".format(min_breaking_height, max_breaking_height, local_tm)
+        except KeyError:
             return None
 
     def __getattr__(self, name):
@@ -234,7 +238,7 @@ class ForecastDataPoint():
             raise ValueError("{} not a valid field type".format(dot))
         try:
             return self.f_d[name]
-        except:
+        except KeyError:
             return PropertyUnavailable("Property {} is unavailable for this forecast".format(name))
 
     def get_swell_url(self, swell_type):
@@ -253,6 +257,7 @@ class ForecastDataPoint():
         if wind_direction is not None:
             rounded = int(5 * round(float(wind_direction)/5))
             return WIND_ARROW_URL.format(rounded)
+
 
 class PropertyUnavailable(AttributeError):
     """Raise when an attribute is not available for a forecast."""
