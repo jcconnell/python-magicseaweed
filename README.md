@@ -1,9 +1,19 @@
 python-magicseaweed
 ==============================================================================================================================================================================================
 
-Provides basic API to [Magic Seaweed](https://magicseaweed.com/developer/api). 
+> [!IMPORTANT]
+> **This package no longer works.** Magicseaweed shut down in 2023 and its API
+> went with it, so no API key will return data. This repository is archived and
+> no longer maintained.
+>
+> **Looking for a surf forecast in Home Assistant?** Use
+> [Surf Forecast for Home Assistant](https://github.com/jcconnell/ha-surf-forecast).
+> It builds a surf forecast for a specific break from
+> [Stormglass](https://stormglass.io) data: wave height, swell period, tide,
+> wind relative to the shore, and a 0–10 rating. It runs on the free
+> Stormglass plan and installs through HACS.
 
-Note: As of 7/8/2022, it was reported that Magicseaweed is not distributing new API keys. This package still works for those who have an API key. Magicseaweed has not stated when or if they will start distributing API keys again. Reference the ["Obtain an API Key"](https://github.com/jcconnell/python-magicseaweed/edit/master/README.md#obtain-an-api-key) section below if you'd like to contact them for more information.
+Provided a basic API wrapper for [Magic Seaweed](https://magicseaweed.com/developer/api).
 
 ## Install
 
